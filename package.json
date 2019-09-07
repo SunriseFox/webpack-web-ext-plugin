@@ -1,0 +1,16 @@
+{
+  "name": "webpack-web-ext-plugin",
+  "version": "0.0.1",
+  "description": "webpack web ext plugin",
+  "main": "index.js",
+  "author": "SunriseFox",
+  "license": "MIT",
+  "private": true,
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "dependencies": {
+    "inquirer": "^7.0.0",
+    "web-ext": "^3.1.1"
+  }
+}
