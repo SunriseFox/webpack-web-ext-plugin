@@ -4,16 +4,18 @@ const inquirer = require('inquirer')
 const pluginName = 'web-ext-plugin'
 
 class WebExtWebpackPlugin {
-  constructor (CmdRunParams = {}, CmdRunOptions = {}) {
+  constructor (CmdRunParams = {}, CmdRunOptions = {}, PluginOptions = {}) {
     this.logger = console.log.bind(console)
     this.CmdRunParams = { ...CmdRunParams, noReload: true, noInput: true }
     this.CmdRunOptions = { ...CmdRunOptions, shouldExitProgram: false }
+    this.verbose = PluginOptions.verbose || false
+    this.timeout = PluginOptions.timeout || 5000
   }
 
   androidSetup () {
     let shouldTimeoutReject = true
     this.androidSetupPromise = new Promise((resolve, reject) => {
-      setTimeout(() => shouldTimeoutReject && reject(new Error('No android device found.')), 5000)
+      setTimeout(() => shouldTimeoutReject && reject(new Error('No android device found.')), this.timeout)
       webExt.util.logger.consoleStream.write = (...args) => {
         const raw = args[0].msg
         const message = (raw || '').trim().split('\n')
@@ -51,9 +53,11 @@ class WebExtWebpackPlugin {
 
     if (this.runner) {
       this.logger('Webpack emitted, reloading...')
-      await this.runner.reloadAllExtensions()
-      this.logger('Extension reloaded.')
-      return
+      let reloadOK = await Promise.race([this.runner.reloadAllExtensions().then(() => true).catch(this.error), new Promise(resolve => setTimeout(resolve, this.timeout, false))])
+      if (reloadOK) {
+        this.logger('Extension reloaded.')
+        return
+      }
     }
 
     const runner = await webExt.cmd.run(this.CmdRunParams, this.CmdRunOptions).catch(this.error)
@@ -71,7 +75,6 @@ class WebExtWebpackPlugin {
     const logger = compiler.getInfrastructureLogger(pluginName)
     this.logger = logger.info.bind(logger)
     this.error = logger.error.bind(logger)
-    this.verbose = this.CmdRunParams.verbose || false
 
     if (this.CmdRunParams.target === 'firefox-android' && !this.CmdRunParams.adbDevice) {
       this.androidSetup.bind(this)()
