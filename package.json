@@ -1,6 +1,6 @@
 {
   "name": "@dimensiondev/webpack-web-ext-plugin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "webpack web ext plugin",
   "license": "MIT",
   "author": "SunriseFox",
