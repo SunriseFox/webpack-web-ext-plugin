@@ -14,7 +14,7 @@ declare interface RunParams {
   sourceDir: string;
   watchFile?: string;
   startUrl?: string[];
-  target?: string[];
+  target?: string | string[];
   args?: string[];
 
   // Android CLI options.
