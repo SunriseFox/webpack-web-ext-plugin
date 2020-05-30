@@ -1,5 +1,5 @@
 {
-  "name": "webpack-web-ext-plugin",
+  "name": "@dimensiondev/webpack-web-ext-plugin",
   "version": "0.0.1",
   "private": true,
   "description": "webpack web ext plugin",
